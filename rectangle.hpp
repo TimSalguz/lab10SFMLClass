@@ -1,4 +1,5 @@
 #pragma once
+#include <SFML/Graphics.hpp>
 
 namespace ts
 {
@@ -12,12 +13,17 @@ namespace ts
     {
     public:
         //Создаю конструктор, передаю в него параметры, обе точки
-        Rectangle::Rectangle(Point A, double B, double C);
+        Rectangle::Rectangle(Point A, double RectWidth, double RectHeight, double velocity);
 
         //Создаю деструктор
-        ~Rectangle() {/*std::cout << "Destructor's end" << std::endl;*/}
+        ~Rectangle() { delete m_shape; }
 
         //Создаю функцию в классе:
+
+        sf::RectangleShape* Get();
+        void SetY(int y);
+        int GetY();
+        void Move();
 
     private:
         //Ultrasecret calculations!
@@ -25,9 +31,11 @@ namespace ts
         Point m_P1;
         double m_Width;
         double m_Height;
+        double m_Velocity;
+        int Width();
+        int Height();
+        void SetVelocity(int velocity);
+        sf::RectangleShape* m_shape;
     };
+
 }
-};
-
-
-#endif //SFML_SAMPLE_RECTANGLE_HPP
