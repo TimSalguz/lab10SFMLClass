@@ -50,7 +50,7 @@ public:
     {
         Count       = 8,  ///< Maximum number of supported joysticks
         ButtonCount = 32, ///< Maximum number of supported buttons
-        AxisCount   = 8   ///< Maximum number of supported axes
+        AxisCount   = 8   ///< Maximum number of supported coords
     };
 
     ////////////////////////////////////////////////////////////
@@ -184,7 +184,7 @@ public:
 /// time and directly, without having to deal with a window and
 /// its events. Compared to the JoystickMoved, JoystickButtonPressed
 /// and JoystickButtonReleased events, sf::Joystick can retrieve the
-/// state of axes and buttons of joysticks at any time
+/// state of coords and buttons of joysticks at any time
 /// (you don't need to store and update a boolean on your side
 /// in order to know if a button is pressed or released), and you
 /// always get the real state of joysticks, even if they are
@@ -194,7 +194,7 @@ public:
 /// SFML supports:
 /// \li 8 joysticks (sf::Joystick::Count)
 /// \li 32 buttons per joystick (sf::Joystick::ButtonCount)
-/// \li 8 axes per joystick (sf::Joystick::AxisCount)
+/// \li 8 coords per joystick (sf::Joystick::AxisCount)
 ///
 /// Unlike the keyboard or mouse, the state of joysticks is sometimes
 /// not directly available (depending on the OS), therefore an update()
