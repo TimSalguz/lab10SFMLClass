@@ -36,15 +36,6 @@ struct Point
 {
     double coords[SKOLKOKOORDINAT];
 };
-struct Ploskost
-{
-    Point ploskost[SKOLKOKOORDINAT];
-};
-
-Ploskost koordinatyPloskosti(Point A, Point B, Point C)
-{
-    return {0,0,0};
-}
 
 struct Color
 {
@@ -52,32 +43,55 @@ struct Color
 };
 
 
-Color PeresekaetLi(Circle A, PointCamera B)
+Color PeresekaetLi(Circle A, Point B, Point C)
 {
-    if(2==2) {
-        return {255, 255, 255, 0};
+
+
+    double a = (C.coords[0] - B.coords[0])* (C.coords[0] - B.coords[0]) + (C.coords[1] - B.coords[1])* (C.coords[1] - B.coords[1]) + (C.coords[2] - B.coords[2])* (C.coords[2] - B.coords[2]);
+    double b = 2 * ((C.coords[0] - B.coords[0])*(B.coords[0] - A.coords[0]) + (C.coords[1] - B.coords[1])*(B.coords[1] - A.coords[1]) + (C.coords[2] - B.coords[2])*(B.coords[2] - A.coords[2]));
+    double c = (B.coords[0] - A.coords[0]) * (B.coords[0] - A.coords[0]) + (B.coords[1] - A.coords[1]) * (B.coords[1] - A.coords[1]) + (B.coords[2] - A.coords[2]) * (B.coords[2] - A.coords[2]) - A.radius * A.radius;
+    double delta = b * b - 4 * a * c;
+
+    if (delta > 0)
+    {
+        std::cout << "@";
+        return { 255, 255, 255, 0 };
+    }
+    else if (delta == 0)
+    {
+        std::cout << "#";
+        return{ 255, 0, 0, 0 };
     }
     else
-        return{0, 0, 0, 0};
+    {
+        std::cout << " ";
+        return { 1, 1, 1, 1 };
+    }
 }
 
 int main() {
-    const int windowWidth = 1920;
-    const int windowHeight = 1080;
+
+
+
+    const int windowWidth = 120;
+    const int windowHeight = 30;
     double otnoshenieStoron = double(windowHeight)/double(windowWidth);
     Circle circleA;
     //Настройка положения шара в пространстве + угол + радиус
 
     for (int i = 0; i < SKOLKOKOORDINAT; ++i) {
-        circleA.coords[i] = 0;
+        circleA.coords[i] = 5;
+
     }
     for (int i = 0; i < SKOLKOKOORDINAT - 1; ++i) {
         circleA.angles[i] = 0;
     }
-    circleA.radius = 5;
-
+    circleA.radius = 1;
     circleA.coords[0] = 10;
     circleA.coords[1] = 0;
+    circleA.coords[2] = 0;
+
+
 
 
 
@@ -88,7 +102,7 @@ int main() {
         camera.coords[i] = 0;
     }
     for (int i = 0; i < SKOLKOKOORDINAT - 1; ++i) {
-        circleA.coords[i] = 0;
+        camera.coords[i] = 0;
     }
     camera.viewAngle = 0;
 
@@ -98,44 +112,38 @@ int main() {
 
     Point SP = {0, 0, otnoshenieStoron/2};
 //СМЕНИТЬ ТИП МАССИВА НА ДИНАМИЧЕСКИЙ
+    Color **colorMatrix = new Color*[windowWidth];
+    for (int i = 0; i < windowWidth; i++)
+    {
+        colorMatrix[i] = new Color[windowHeight];
+    }
+
     //Color colorMatrix[windowWidth][windowHeight];
     //Начинаю цикл, пока количество плоскостей меньше windowHeight. у первой плоскости коорды по высоте 0,28125, и уменьшается(из 0,28125 по otnosiniestoron/windowHeight
     //*ДОБАВИТЬ ЗАВИСИМОСТЬ SP от углов вверх-вниз, влево-вправо
-    int count = 0;
-    int widthMatrix = 0;
-    int heightMatrix = 0;
-    for (double i = double(otnoshenieStoron)/2; i > -1* double(otnoshenieStoron)/2; i = i-otnoshenieStoron/windowHeight)
-    {
-        for (double j = -0.5; j < 0.5; j = j+1/double(windowWidth)) {
-            count++;
-            //colorMatrix[widthMatrix][heightMatrix] = PeresekaetLi(circleA, {i, j, 0});
-            heightMatrix++;
+    for ( ; ; ) {
+        int count = 0;
+        double widthMatrix = -0.5;
+        double heightMatrix = otnoshenieStoron / 2;
+
+        for (int i = 0; i < windowHeight; ++i) {
+            widthMatrix = -0.5;
+            for (int j = 0; j < windowWidth; ++j) {
+                colorMatrix[j][i] = PeresekaetLi(circleA, ZP, {0, widthMatrix, heightMatrix});
+                widthMatrix += 1 / double(windowWidth);
+            }
+            heightMatrix -= otnoshenieStoron / double(windowHeight);
         }
-        widthMatrix++;
-    }
-    std::cout << count << std::endl;
-    //Узнаю направляющий вектор прямой, выпущенной из камеры
-    Vector napravVector;
-    for (int i = 0; i < SKOLKOKOORDINAT; ++i)
-    {
-        napravVector.coords[i] = SP.coords[i] - ZP.coords[i];
-    }
-    //ОТЛАДКА
-    for (int i = 0; i < SKOLKOKOORDINAT; ++i)
-    {
-        std::cout << "NaprVector [" << i << "] coords = " << napravVector.coords[i] << std::endl;
-    }
-    //Нахожу вектор нормали
-    Vector normalVector;
-    normalVector.coords[0] = -1*napravVector.coords[2];
-    normalVector.coords[1] = napravVector.coords[1];
-    normalVector.coords[2] = napravVector.coords[0];
+        circleA.coords[0] += 1;
 
-    for (int i = 0; i < SKOLKOKOORDINAT; ++i)
-    {
-        std::cout << "NormalVector [" << i << "] coords = " << normalVector.coords[i] << std::endl;
-    }
 
+
+        //std::cout << widthMatrix << std::endl;
+        //std::cout << heightMatrix << std::endl;
+        //std::cout << count << std::endl;
+
+        //getchar();
+    }
     //Нахожу еще точку, лежащую на плоскости
     //Point NaPloskostiA =
     //Нахожу уравнение плоскости через точку, лежащую на ней и нормальный вектор
