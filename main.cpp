@@ -9,9 +9,7 @@
 #include <ctime>
 #define SKOLKOKOORDINAT 3
 #define DALNOSTZRENIYA 1000
-
-const int windowWidth = 1366;
-const int windowHeight = 768;
+using namespace std::chrono_literals;
 
 
 
@@ -29,30 +27,44 @@ struct PointCamera
     double viewAngle;
 };
 
-struct ZeroPointCamera
-{
-    double coords[SKOLKOKOORDINAT];
-};
-struct NaprVector
+struct Vector
 {
     double coords[SKOLKOKOORDINAT];
 };
 
-
-struct ScreenPoint
+struct Point
 {
     double coords[SKOLKOKOORDINAT];
 };
-
-bool PeresekaetLi(Circle A, PointCamera B)
+struct Ploskost
 {
-    if(2==2) {
-        return false;
-    }
+    Point ploskost[SKOLKOKOORDINAT];
+};
+
+Ploskost koordinatyPloskosti(Point A, Point B, Point C)
+{
+    return {0,0,0};
 }
 
-using namespace std::chrono_literals;
+struct Color
+{
+    short r,g,b,alpha;
+};
+
+
+Color PeresekaetLi(Circle A, PointCamera B)
+{
+    if(2==2) {
+        return {255, 255, 255, 0};
+    }
+    else
+        return{0, 0, 0, 0};
+}
+
 int main() {
+    const int windowWidth = 1920;
+    const int windowHeight = 1080;
+    double otnoshenieStoron = double(windowHeight)/double(windowWidth);
     Circle circleA;
     //Настройка положения шара в пространстве + угол + радиус
 
@@ -62,10 +74,10 @@ int main() {
     for (int i = 0; i < SKOLKOKOORDINAT - 1; ++i) {
         circleA.angles[i] = 0;
     }
-    circleA.radius = 10;
+    circleA.radius = 5;
 
-    circleA.coords[0] = 0;
-    circleA.coords[1] = 10000;
+    circleA.coords[0] = 10;
+    circleA.coords[1] = 0;
 
 
 
@@ -80,14 +92,30 @@ int main() {
     }
     camera.viewAngle = 0;
 
-    ZeroPointCamera ZP;
+    Point ZP;
 
-    ZP = {-1, 0, 0};
+    ZP = {-0.5, 0, 0};
 
-    ScreenPoint SP = {0, 0, 0};
-
+    Point SP = {0, 0, otnoshenieStoron/2};
+//СМЕНИТЬ ТИП МАССИВА НА ДИНАМИЧЕСКИЙ
+    //Color colorMatrix[windowWidth][windowHeight];
+    //Начинаю цикл, пока количество плоскостей меньше windowHeight. у первой плоскости коорды по высоте 0,28125, и уменьшается(из 0,28125 по otnosiniestoron/windowHeight
+    //*ДОБАВИТЬ ЗАВИСИМОСТЬ SP от углов вверх-вниз, влево-вправо
+    int count = 0;
+    int widthMatrix = 0;
+    int heightMatrix = 0;
+    for (double i = double(otnoshenieStoron)/2; i > -1* double(otnoshenieStoron)/2; i = i-otnoshenieStoron/windowHeight)
+    {
+        for (double j = -0.5; j < 0.5; j = j+1/double(windowWidth)) {
+            count++;
+            //colorMatrix[widthMatrix][heightMatrix] = PeresekaetLi(circleA, {i, j, 0});
+            heightMatrix++;
+        }
+        widthMatrix++;
+    }
+    std::cout << count << std::endl;
     //Узнаю направляющий вектор прямой, выпущенной из камеры
-    NaprVector napravVector;
+    Vector napravVector;
     for (int i = 0; i < SKOLKOKOORDINAT; ++i)
     {
         napravVector.coords[i] = SP.coords[i] - ZP.coords[i];
@@ -95,12 +123,28 @@ int main() {
     //ОТЛАДКА
     for (int i = 0; i < SKOLKOKOORDINAT; ++i)
     {
-        napravVector.coords[i] = SP.coords[i] - ZP.coords[i];
         std::cout << "NaprVector [" << i << "] coords = " << napravVector.coords[i] << std::endl;
     }
+    //Нахожу вектор нормали
+    Vector normalVector;
+    normalVector.coords[0] = -1*napravVector.coords[2];
+    normalVector.coords[1] = napravVector.coords[1];
+    normalVector.coords[2] = napravVector.coords[0];
+
+    for (int i = 0; i < SKOLKOKOORDINAT; ++i)
+    {
+        std::cout << "NormalVector [" << i << "] coords = " << normalVector.coords[i] << std::endl;
+    }
+
+    //Нахожу еще точку, лежащую на плоскости
+    //Point NaPloskostiA =
+    //Нахожу уравнение плоскости через точку, лежащую на ней и нормальный вектор
+    //double uravneniePloskostiX, uravneniePloskostiY, uravneniePloskostiZ;
+    //uravneniePloskostiX = normalVector.coords[0]*(-)
+    //Если плоскость и шар пересекаются, то
 
 
-    //Находим расстояние от центра окружности до прямой
+    //Находим пересечение прямой и круга
 
 
 
@@ -135,7 +179,7 @@ int main() {
 
 
 
-    PeresekaetLi(circleA, camera);
+    //PeresekaetLi(circleA, camera);
 
 
 //
