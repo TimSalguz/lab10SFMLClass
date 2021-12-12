@@ -45,8 +45,6 @@ struct Color
 
 Color PeresekaetLi(Circle A, Point B, Point C)
 {
-
-
     double a = (C.coords[0] - B.coords[0])* (C.coords[0] - B.coords[0]) + (C.coords[1] - B.coords[1])* (C.coords[1] - B.coords[1]) + (C.coords[2] - B.coords[2])* (C.coords[2] - B.coords[2]);
     double b = 2 * ((C.coords[0] - B.coords[0])*(B.coords[0] - A.coords[0]) + (C.coords[1] - B.coords[1])*(B.coords[1] - A.coords[1]) + (C.coords[2] - B.coords[2])*(B.coords[2] - A.coords[2]));
     double c = (B.coords[0] - A.coords[0]) * (B.coords[0] - A.coords[0]) + (B.coords[1] - A.coords[1]) * (B.coords[1] - A.coords[1]) + (B.coords[2] - A.coords[2]) * (B.coords[2] - A.coords[2]) - A.radius * A.radius;
@@ -54,15 +52,15 @@ Color PeresekaetLi(Circle A, Point B, Point C)
 
     if (delta > 0)
     {
-        return { 255, 255, 255, 255 };
+        return { 255, 255, 0, 125 };
     }
     else if (delta == 0)
     {
-        return{ 255, 255, 255, 0 };
+        return{ 255, 255, 0, 125 };
     }
     else
     {
-        return { 0, 0, 0, 1 };
+        return { 0, 0, 1, 125 };
     }
 }
 
@@ -88,7 +86,6 @@ int main() {
     circleA.coords[2] = 0;
 
     sf::RenderWindow wnd(sf::VideoMode(800, 600), "SFML");
-    sf::Uint32 arr[120][30];
     sf::Texture tx;
     tx.create(120, 30);
     sf::Sprite sprite(tx);
@@ -106,7 +103,7 @@ int main() {
     for (int i = 0; i < SKOLKOKOORDINAT - 1; ++i) {
         camera.angles[i] = 0;
     }
-    camera.angles[0] = 0.0125;
+    camera.angles[0] = 0;
     camera.angles[1] = 0;
     camera.zeroPointDistance = 0.5;
 
@@ -114,10 +111,8 @@ int main() {
     Point SP;
 
 //СМЕНИТЬ ТИП МАССИВА НА ДИНАМИЧЕСКИЙ
-    Color **colorMatrix = new Color *[windowHeight];
-    for (int i = 0; i < windowHeight; i++) {
-        colorMatrix[i] = new Color[windowWidth];
-    }
+    Color *colorMatrix = new Color[windowHeight*windowWidth];
+
     //Color colorMatrix[windowWidth][windowHeight];
     //Начинаю цикл, пока количество плоскостей меньше windowHeight. у первой плоскости коорды по высоте 0,28125, и уменьшается(из 0,28125 по otnosiniestoron/windowHeight
     while (wnd.isOpen()) {
@@ -127,7 +122,6 @@ int main() {
                 wnd.close();
                 break;
             }
-            int count = 0;
             double widthMatrix = -0.5;
             double heightMatrix = otnoshenieStoron / 2;
             //*ДОБАВИТЬ ЗАВИСИМОСТЬ SP от углов вверх-вниз, влево-вправо
@@ -135,24 +129,25 @@ int main() {
             ZP = {camera.coords[1] - cos(camera.angles[0] * 3.141) * 0.5,
                   camera.coords[0] - sin(camera.angles[0] * 3.141) * 0.5, 0};
             SP = {0, 0, otnoshenieStoron / 2};
+            int count = 0;
             for (int i = 0; i < windowHeight; ++i) {
                 widthMatrix = -0.5;
                 for (int j = 0; j < windowWidth; ++j) {
-                    colorMatrix[i][j] = PeresekaetLi(circleA, ZP, {0, heightMatrix, widthMatrix});
+                    colorMatrix[count] = PeresekaetLi(circleA, ZP, {0, heightMatrix, widthMatrix});
                     widthMatrix += 1 / double(windowWidth);
+                    count++;
+                    //colorMatrix[i*windowWidth + j] = {255,255,255,128};
                 }
                 heightMatrix -= otnoshenieStoron / double(windowHeight);
             }
             camera.angles[0] += 0.0;
 
 
-            for (int a = 0; a < windowHeight; ++a) {
-                for (int b = 0; b < windowWidth; ++b) {
-                    //printf("%d",colorMatrix[a][b].alpha);
+            for (int a = 0; a < windowHeight*windowWidth; ++a) {
+                    printf("%d",colorMatrix[a].b);
 
-                }
             }
-            tx.update((sf::Uint8 *) colorMatrix, windowWidth, windowHeight, 0, 0);
+            tx.update((sf::Uint8 *)colorMatrix, windowWidth, windowHeight, 0, 0);
 
             wnd.clear();
             wnd.draw(sprite);
