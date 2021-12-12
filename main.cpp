@@ -39,10 +39,10 @@ struct Point
 
 struct Color
 {
-    short r,g,b,alpha;
+    uint8_t r,g,b,alpha;
 };
 
-
+//СДЕЛАТЬ, ЧТОБ СО СПИНЫ НЕ БЫЛО ПЕРЕСЕЧЕНИЙ
 Color PeresekaetLi(Circle A, Point B, Point C)
 {
     double a = (C.coords[0] - B.coords[0])* (C.coords[0] - B.coords[0]) + (C.coords[1] - B.coords[1])* (C.coords[1] - B.coords[1]) + (C.coords[2] - B.coords[2])* (C.coords[2] - B.coords[2]);
@@ -52,27 +52,26 @@ Color PeresekaetLi(Circle A, Point B, Point C)
 
     if (delta > 0)
     {
-        return { 255, 255, 0, 125 };
+        return { 255, 255, 255, 255 };
     }
     else if (delta == 0)
     {
-        return{ 255, 255, 0, 125 };
+        return{ 255, 255, 255, 255 };
     }
     else
     {
-        return { 0, 0, 1, 125 };
+        return { 0, 0, 0, 255 };
     }
 }
 
 int main() {
 
 
-    const int windowWidth = 120;
-    const int windowHeight = 30;
+    const int windowWidth = 800;
+    const int windowHeight = 600;
     double otnoshenieStoron = double(windowHeight) / double(windowWidth);
     Circle circleA;
     //Настройка положения шара в пространстве + угол + радиус
-
     for (int i = 0; i < SKOLKOKOORDINAT; ++i) {
         circleA.coords[i] = 5;
 
@@ -85,12 +84,13 @@ int main() {
     circleA.coords[1] = 0;
     circleA.coords[2] = 0;
 
-    sf::RenderWindow wnd(sf::VideoMode(800, 600), "SFML");
-    sf::Texture tx;
-    tx.create(120, 30);
-    sf::Sprite sprite(tx);
-    sprite.setPosition(50, 50);
+    sf::RenderWindow wnd(sf::VideoMode(windowWidth, windowHeight), "SFML");
+    wnd.setFramerateLimit(60);
 
+    sf::Texture tx;
+    tx.create(windowWidth, windowHeight);
+    sf::Sprite sprite(tx);
+    sprite.setPosition(0, 0);
 
     PointCamera camera;
 //Настройка положения камеры в пространстве + угол направления взгляда + угол зрения
@@ -122,6 +122,7 @@ int main() {
                 wnd.close();
                 break;
             }
+        }
             double widthMatrix = -0.5;
             double heightMatrix = otnoshenieStoron / 2;
             //*ДОБАВИТЬ ЗАВИСИМОСТЬ SP от углов вверх-вниз, влево-вправо
@@ -140,14 +141,14 @@ int main() {
                 }
                 heightMatrix -= otnoshenieStoron / double(windowHeight);
             }
-            camera.angles[0] += 0.0;
 
+            circleA.coords[0]--;
 
-            for (int a = 0; a < windowHeight*windowWidth; ++a) {
-                    printf("%d",colorMatrix[a].b);
+            //for (int a = 0; a < windowHeight*windowWidth; ++a) {
+                    //printf("%d",colorMatrix[a].b);
 
-            }
-            tx.update((sf::Uint8 *)colorMatrix, windowWidth, windowHeight, 0, 0);
+            //}
+            tx.update((uint8_t *)(colorMatrix), windowWidth, windowHeight, 0, 0);
 
             wnd.clear();
             wnd.draw(sprite);
@@ -156,6 +157,6 @@ int main() {
             //std::cout << heightMatrix << std::endl;
             //std::cout << count << std::endl;
             //getchar();
-        }
+
     }
 }
