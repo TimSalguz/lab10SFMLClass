@@ -24,7 +24,7 @@ struct PointCamera
 {
     double coords[SKOLKOKOORDINAT];
     double angles[SKOLKOKOORDINAT-1];
-    double viewAngle;
+    double zeroPointDistance;
 };
 
 struct Vector
@@ -54,28 +54,24 @@ Color PeresekaetLi(Circle A, Point B, Point C)
 
     if (delta > 0)
     {
-        std::cout << "@";
-        return { 255, 255, 255, 0 };
+        return { 255, 255, 255, 255 };
     }
     else if (delta == 0)
     {
-        std::cout << "#";
-        return{ 255, 0, 0, 0 };
+        return{ 255, 255, 255, 0 };
     }
     else
     {
-        std::cout << " ";
-        return { 1, 1, 1, 1 };
+        return { 0, 0, 0, 1 };
     }
 }
 
 int main() {
 
 
-
     const int windowWidth = 120;
     const int windowHeight = 30;
-    double otnoshenieStoron = double(windowHeight)/double(windowWidth);
+    double otnoshenieStoron = double(windowHeight) / double(windowWidth);
     Circle circleA;
     //Настройка положения шара в пространстве + угол + радиус
 
@@ -91,9 +87,12 @@ int main() {
     circleA.coords[1] = 0;
     circleA.coords[2] = 0;
 
-
-
-
+    sf::RenderWindow wnd(sf::VideoMode(800, 600), "SFML");
+    sf::Uint32 arr[120][30];
+    sf::Texture tx;
+    tx.create(120, 30);
+    sf::Sprite sprite(tx);
+    sprite.setPosition(50, 50);
 
 
     PointCamera camera;
@@ -101,136 +100,67 @@ int main() {
     for (int i = 0; i < SKOLKOKOORDINAT; ++i) {
         camera.coords[i] = 0;
     }
+    camera.coords[0] = 0;
+    camera.coords[1] = 0;
+    camera.coords[2] = 0;
     for (int i = 0; i < SKOLKOKOORDINAT - 1; ++i) {
-        camera.coords[i] = 0;
+        camera.angles[i] = 0;
     }
-    camera.viewAngle = 0;
+    camera.angles[0] = 0.0125;
+    camera.angles[1] = 0;
+    camera.zeroPointDistance = 0.5;
 
     Point ZP;
+    Point SP;
 
-    ZP = {-0.5, 0, 0};
-
-    Point SP = {0, 0, otnoshenieStoron/2};
 //СМЕНИТЬ ТИП МАССИВА НА ДИНАМИЧЕСКИЙ
-    Color **colorMatrix = new Color*[windowWidth];
-    for (int i = 0; i < windowWidth; i++)
-    {
-        colorMatrix[i] = new Color[windowHeight];
+    Color **colorMatrix = new Color *[windowHeight];
+    for (int i = 0; i < windowHeight; i++) {
+        colorMatrix[i] = new Color[windowWidth];
     }
-
     //Color colorMatrix[windowWidth][windowHeight];
     //Начинаю цикл, пока количество плоскостей меньше windowHeight. у первой плоскости коорды по высоте 0,28125, и уменьшается(из 0,28125 по otnosiniestoron/windowHeight
-    //*ДОБАВИТЬ ЗАВИСИМОСТЬ SP от углов вверх-вниз, влево-вправо
-    for ( ; ; ) {
-        int count = 0;
-        double widthMatrix = -0.5;
-        double heightMatrix = otnoshenieStoron / 2;
-
-        for (int i = 0; i < windowHeight; ++i) {
-            widthMatrix = -0.5;
-            for (int j = 0; j < windowWidth; ++j) {
-                colorMatrix[j][i] = PeresekaetLi(circleA, ZP, {0, widthMatrix, heightMatrix});
-                widthMatrix += 1 / double(windowWidth);
+    while (wnd.isOpen()) {
+        sf::Event event;
+        while (wnd.pollEvent(event)) {
+            if (event.type == sf::Event::Closed) {
+                wnd.close();
+                break;
             }
-            heightMatrix -= otnoshenieStoron / double(windowHeight);
+            int count = 0;
+            double widthMatrix = -0.5;
+            double heightMatrix = otnoshenieStoron / 2;
+            //*ДОБАВИТЬ ЗАВИСИМОСТЬ SP от углов вверх-вниз, влево-вправо
+
+            ZP = {camera.coords[1] - cos(camera.angles[0] * 3.141) * 0.5,
+                  camera.coords[0] - sin(camera.angles[0] * 3.141) * 0.5, 0};
+            SP = {0, 0, otnoshenieStoron / 2};
+            for (int i = 0; i < windowHeight; ++i) {
+                widthMatrix = -0.5;
+                for (int j = 0; j < windowWidth; ++j) {
+                    colorMatrix[i][j] = PeresekaetLi(circleA, ZP, {0, heightMatrix, widthMatrix});
+                    widthMatrix += 1 / double(windowWidth);
+                }
+                heightMatrix -= otnoshenieStoron / double(windowHeight);
+            }
+            camera.angles[0] += 0.0;
+
+
+            for (int a = 0; a < windowHeight; ++a) {
+                for (int b = 0; b < windowWidth; ++b) {
+                    //printf("%d",colorMatrix[a][b].alpha);
+
+                }
+            }
+            tx.update((sf::Uint8 *) colorMatrix, windowWidth, windowHeight, 0, 0);
+
+            wnd.clear();
+            wnd.draw(sprite);
+            wnd.display();
+            //std::cout << widthMatrix << std::endl;
+            //std::cout << heightMatrix << std::endl;
+            //std::cout << count << std::endl;
+            //getchar();
         }
-        circleA.coords[0] += 1;
-
-
-
-        //std::cout << widthMatrix << std::endl;
-        //std::cout << heightMatrix << std::endl;
-        //std::cout << count << std::endl;
-
-        //getchar();
     }
-    //Нахожу еще точку, лежащую на плоскости
-    //Point NaPloskostiA =
-    //Нахожу уравнение плоскости через точку, лежащую на ней и нормальный вектор
-    //double uravneniePloskostiX, uravneniePloskostiY, uravneniePloskostiZ;
-    //uravneniePloskostiX = normalVector.coords[0]*(-)
-    //Если плоскость и шар пересекаются, то
-
-
-    //Находим пересечение прямой и круга
-
-
-
-//    if (ZP.coords[0]!=SP.coords[0]) {
-//        double k = (SP.coords[1] - ZP.coords[1]) / (SP.coords[0] - ZP.coords[0]);
-//
-//        double b = ZP.coords[1] * ((SP.coords[0] * k));
-//
-//        double a = 1 + k * k;
-//
-//        double c = circleA.coords[0] * circleA.coords[0] + b * b - 2 * circleA.coords[1] * b +
-//                   circleA.coords[1] * circleA.coords[1] - circleA.radius * circleA.radius;
-//
-//        double D = 4 * (b * k - circleA.coords[0] - circleA.coords[1] * k) *
-//                       (b * k - circleA.coords[0] - circleA.coords[1] * k) - 4 * a * c;
-//
-//        if (D >= 0)
-//            std::cout << "Peresekaet";
-//        else
-//            std::cout << "Ne peresekaet";
-//    }
-//    else if(ZP.coords[0]==SP.coords[0] && ZP.coords[1]!=SP.coords[1])
-//    {
-//        if(ZP.coords[0]>=circleA.coords[0]-circleA.radius && ZP.coords[0]<=circleA.coords[0]+circleA.radius)
-//            std::cout<<"Peresekaet";
-//        else
-//            std::cout<<"Ne peresekaet";
-//    }
-//    else
-//        std::cout<<"Points are equal";
-
-
-
-
-    //PeresekaetLi(circleA, camera);
-
-
-//
-//    srand(static_cast<unsigned int>(time(0)));
-//    double random = (double (rand()%windowWidth));
-//    std::cout << random;
-//    sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), "Win");
-//
-//    std::vector<ts::Rectangle*> rectangles;
-//
-//
-//    while (window.isOpen())
-//    {
-//        sf::Event event;
-//        while (window.pollEvent(event))
-//        {
-//            if (event.type == sf::Event::Closed)
-//                window.close();
-//        }
-//        if(rectangles.size() < MAXELEMENTSONSCREEN)
-//
-//            for (int i = 0; i < POSKOLKOSOZDAVAT; ++i) {
-//                rectangles.push_back(new ts::Rectangle ({ (double (rand()%windowWidth)), VYSOTAPOYAVLENIYA }, 1+(rand()%MAXRECTWIDTH), 1+(rand()%MAXRECTHEIGHT), windowHeight/(double (rand()%1000))));
-//            }
-//
-//        for(int i = 0; i < rectangles.size(); i++)
-//            if ((rectangles[i]->GetY()) <= windowHeight - VYSOTAISCHEZANIYA)
-//                rectangles[i]->Move();
-//            else
-//                rectangles.erase(rectangles.begin() + i);
-//
-//
-//
-//
-//
-//            window.clear();
-//        for(int i = 0; i < rectangles.size(); i++)
-//        window.draw(*rectangles[i] ->Get());
-//        window.display();
-//
-//        std::cout << rectangles.size() << std::endl;
-//
-//        std::this_thread::sleep_for(1ms);
-//    }
-//    return 0;
 }
