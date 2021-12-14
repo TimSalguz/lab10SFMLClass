@@ -4,10 +4,14 @@
 #pragma once
 #define DIMENSIONS 3
 
-namespace ts {
+namespace ts
+{
     class Objects {
     public:
         class Point {
+        public:
+            Point(){};
+            ~Point(){};
             double coords[DIMENSIONS];
         };
 
@@ -29,6 +33,5 @@ namespace ts {
 
         };
     };
-
 }
 

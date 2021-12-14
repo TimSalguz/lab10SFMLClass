@@ -12,6 +12,8 @@
 #define DALNOSTZRENIYA 1000
 
 
+
+
 using namespace std::chrono_literals;
 int main()
 {
@@ -29,10 +31,10 @@ int main()
     //Цикл проверки пересечения с плоскостью (Вертикальные плоскости)
     for(int i = 0; i < windowWidth; i++)
     {
-        if (IntersectionPloskost() == true)
-        {
-
-        }
+        //if (IntersectionPloskost() == true)
+        //{
+//
+        //}
     }
 
     sf::Texture tx;
