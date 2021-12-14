@@ -1,8 +1,8 @@
-#pragma once
-#include <SFML/Graphics.hpp>
+//#pragma once
+//#include <SFML/Graphics.hpp>
 
-namespace ts
-{
+//namespace ts
+//{
 //    struct Point
 //    {
 //        double x;
@@ -38,4 +38,4 @@ namespace ts
 //        sf::RectangleShape* m_shape;
 //    };
 
-}
+//}

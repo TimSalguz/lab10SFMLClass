@@ -1,8 +1,8 @@
-#include "rectangle.hpp"
-#include <iostream>
+//#include "rectangle.hpp"
+//#include <iostream>
 
-namespace ts
-{
+//namespace ts
+//{
 //    Rectangle::Rectangle(Point A, double Width, double Heigth, double velocity)
 //    {
 //        m_P1 = A;
@@ -61,4 +61,4 @@ namespace ts
 //        m_shape->setPosition(m_P1.x, m_P1.y);
 //    }
 
-}
+//}
