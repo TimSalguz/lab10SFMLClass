@@ -1,5 +1,5 @@
-﻿#include "functions.hpp"
-#include "objects.hpp"
+﻿#include "objects.hpp"
+#include "functions.hpp"
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include <thread>
@@ -13,37 +13,85 @@
 
 
 
-
 using namespace std::chrono_literals;
-int main()
-{
-    const int windowWidth = 800;
-    const int windowHeight = 600;
+int main() {
     double otnoshenieStoron = double(windowHeight) / double(windowWidth);
 
-    ts::Objects::Point A;
+    //Создаю сферу. Задаю координаты сферы.
 
+    ts::Objects::Sphere sphere;
+    sphere.center.coords[0] = 6;
+    sphere.center.coords[1] = 0;
+    sphere.center.coords[2] = 0;
+    sphere.r = 4;
+    sphere.color = {255, 0, 0, 125};
 
+    //Создаю землю
+    ts::Objects::Sphere earth;
+    earth.center.coords[0] = 0;
+    earth.center.coords[1] = 0;
+    earth.center.coords[2] = -11001;
+    earth.r = 11000;
+    earth.color = {155, 255, 155, 255};
+
+    //Создаю камеру. Задаю координаты камеры
+    ts::Objects::Camera camera;
+    camera.point.coords[0] = 0;
+    camera.point.coords[1] = 0;
+    camera.point.coords[2] = 0;
+    camera.angles.angle[0] = 0;
+    camera.angles.angle[1] = 0;
+
+    //Создаю массив - матрицу, но одномерную
+    ts::Color *colorMatrix = new ts::Color[windowHeight * windowWidth];
 
     sf::RenderWindow wnd(sf::VideoMode(windowWidth, windowHeight), "SFML");
     wnd.setFramerateLimit(60);
-
-    //Цикл проверки пересечения с плоскостью (Вертикальные плоскости)
-    for(int i = 0; i < windowWidth; i++)
-    {
-        //if (IntersectionPloskost() == true)
-        //{
-//
-        //}
-    }
-
     sf::Texture tx;
     tx.create(windowWidth, windowHeight);
     sf::Sprite sprite(tx);
-    sprite.setPosition(0, 0);
-    wnd.clear();
-    wnd.draw(sprite);
-    wnd.display();
+
+    double vertPixel;
+    double horizPixel;
+    while (wnd.isOpen()) {
+        sf::Event event;
+        while (wnd.pollEvent(event)) {
+            if (event.type == sf::Event::Closed) {
+                wnd.close();
+                break;
+            }
+        }
+        //Цикл проверки пересечения с плоскостью (Вертикальные плоскости) (ПОТОМ БУДЕТ, ПОСЛЕ ОПТИМИЗАЦИИ)
+        vertPixel = double(windowHeight)/(2*windowWidth);
+        int pixelNumber = 0;
+        for (int i = 0; i < windowHeight; i++) {
+            horizPixel = -0.5;
+            for (int j = 0; j < windowWidth; ++j) {
+                //std::cout << camera.point.coords[0] << " " << camera.point.coords[1] << " " <<camera.point.coords[2] << std::endl;
+
+                //Если луч пересекается со сферой, то закрасить пиксель в цвет сферы
+                if (earth.IntersectionLine(horizPixel, vertPixel, camera, earth)) {
+                    colorMatrix[pixelNumber] = earth.color;
+                }
+
+                if (sphere.IntersectionLine(horizPixel, vertPixel, camera, sphere)) {
+                    colorMatrix[pixelNumber] = sphere.color;
+                }
+
+                    pixelNumber++;
+
+                horizPixel+=1.0/windowWidth;
+            }
+            vertPixel -= otnoshenie/windowHeight;
+        }
+        tx.update((uint8_t *) (colorMatrix), windowWidth, windowHeight, 0, 0);
+
+
+        sprite.setPosition(0, 0);
+        wnd.clear();
+        wnd.draw(sprite);
+        wnd.display();
+    }
 }
 
 
