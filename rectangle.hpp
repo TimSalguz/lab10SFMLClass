@@ -47,19 +47,14 @@ namespace ts
         void dX(float dx){m_t.x += dx;}
         void dY(float dy){m_t.y += dy;}
         void dZ(float dz){m_t.z += dz;}
-        void dRoll(float droll){
-            m_angles.roll += droll;
-        }
+        void dRoll(float droll){ m_angles.roll += droll;}
         void dPitch(float dpitch){m_angles.pitch += dpitch;}
         void dYaw(float dyaw){m_angles.yaw += dyaw;}
-        double GetX() {return m_t.x;}
-        double GetY() {return m_t.y;}
-        double GetZ() {return m_t.z;}
         void Clear()
         {
             for(int i=0;i<m_height;i++)
                 for(int j=0;j<m_width;j++)
-                    m_picture[i*m_width+j] = {0,0,0,128};
+                    m_picture[i*m_width+j] = {0,125,200,128};
         }
 
         void ProjectPoint(Point p, Color c)
@@ -68,22 +63,22 @@ namespace ts
             float Y = p.y;
             float Z = p.z;
 
-            float c1 = cos(m_angles.yaw);
-            float c2 = cos(m_angles.pitch);
-            float c3 = cos(m_angles.roll);
-            float s1 = sin(m_angles.yaw);
-            float s2 = sin(m_angles.pitch);
-            float s3 = sin(m_angles.roll);
+            float c1 = cos(m_angles.yaw/2);
+            float c2 = cos(m_angles.pitch/2);
+            float c3 = cos(m_angles.roll/2);
+            float s1 = sin(m_angles.yaw/2);
+            float s2 = sin(m_angles.pitch/2);
+            float s3 = sin(m_angles.roll/2);
 
-            float r11 = c1*c2;
-            float r12 = c1*s2*s3-s1*c3;
-            float r13 = c1*s2*c3+s1*s3;
-            float r21 = s1*c2;
-            float r22 = s1*s2*s3+c1*c3;
-            float r23 = s1*s2*c3-c1*s3;
-            float r31 = -s2;
-            float r32 = c2*s3;
-            float r33 = c2*c3;
+            float r11 = c1*c2; //сверху
+            float r12 = c1*s2*s3-s1*c3; //yaw
+            float r13 = c1*s2*c3+s1*s3; //yaw
+            float r21 = s1*c2;          //yaw растягивает
+            float r22 = s1*s2*s3+c1*c3;//влево-вправо
+            float r23 = s1*s2*c3-c1*s3; //вверх-вниз yaw
+            float r31 = s2; //влево-вправо растягивает
+            float r32 = c2*s3; //вверх-вниз растягивает
+            float r33 = c2*c3; //вдаль растягивает
 
 
             float x = m_t.x + r11*X + r12*Y + r13*Z;
@@ -104,6 +99,7 @@ namespace ts
 
                 if(x>=0 && x<m_width && y>=0 && y<m_height)
                     m_picture[(int)y*m_width+(int)x] = c;
+
             }
         }
 
