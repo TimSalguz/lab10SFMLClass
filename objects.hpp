@@ -8,8 +8,8 @@
 #include <cmath>
 #include <iostream>
 
-const int windowWidth = 800;
-const int windowHeight = 600;
+const int windowWidth = 1920;
+const int windowHeight = 1080;
 double otnoshenie = double(windowHeight)/windowWidth;
 const int DIMENSIONS = 3;
 
